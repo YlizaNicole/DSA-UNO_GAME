@@ -130,6 +130,42 @@ class Deck:
             #DSA using List Methods & Built-In FunctIons len ()
             return self._cards[len(self._cards)-1]
 
+
+class Player:
+    def __init__(self, name):
+        self._name = name
+        self._deck = Deck()
+
+    def get_name(self):
+        return self._name
+    
+    def get_deck(self):
+        return self._deck
+
+    def is_playable(self):
+        raise NotImplementedError("is_playable to be implemented by subclasses")
+    
+    def has_won(self):
+        if self._deck.get_amount() == 0:
+            return True
+        else:
+            return False
+
+    def pick_card(self, putdown_pile):
+        raise NotImplementedError("pick_card to be implemented by subclasses")
+
+
+class HumanPlayer(Player):
+    def __init__(self, name):
+        Player.__init__(self, name)
+        self._deck = Deck()
+
+    def is_playable(self):
+        return True
+
+    def pick_card(self, putdown_pile):
+        return None
+
 class TurnManager:
     """
     A class to manage the order of turns amongst game players.
