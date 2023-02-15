@@ -1,9 +1,11 @@
 ####### TRYING TO IMPROVE THE SRC CODE ########
-#making it a single player
+
+from enum import Enum
 
 
-#STEPS
-#Make it open a program that houses the game
-#build a deck
-#add user interface
-#functions 
+class CardColor(Enum):
+    blue = "#0956BF"
+    red = "#D72600"
+    yellow = "#ECD407"
+    green = "#379711"
+    black = "#222"
