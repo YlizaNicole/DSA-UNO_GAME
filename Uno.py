@@ -166,6 +166,23 @@ class HumanPlayer(Player):
     def pick_card(self, putdown_pile):
         return None
 
+class ComputerPlayer(Player):
+    def __init__(self, name):
+        Player.__init__(self, name)
+        self._deck = Deck()
+
+    def is_playable(self):
+        return False
+
+    def pick_card(self, putdown_pile): #BUG, Computer player can't activate Pick4Card effect
+        for i in self._deck.get_cards():
+            if i.matches(putdown_pile.top()):
+                picked_card = i
+                self._deck.get_cards().remove(i)
+                return picked_card
+        return None
+
+
 class TurnManager:
     """
     A class to manage the order of turns amongst game players.
@@ -261,6 +278,3 @@ Deck = [
     ]
 
 SPECIAL_CARDS = [Pickup4Card]
-
-print(Deck)
-print (SPECIAL_CARDS) 
