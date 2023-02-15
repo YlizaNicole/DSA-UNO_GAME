@@ -532,3 +532,145 @@ CARD_VIEWS = {
     Pickup4Card: PickupCardView
 } #adding dictionary
 
+class DeckView(tk.Canvas):
+    """
+    A Canvas that displays a deck of uno cards on a board.
+    """
+
+    def __init__(self, master, pick_card=None, border_colour="#6D4C41",
+                 active_border="red", offset=CARD_WIDTH, *args, **kwargs):
+        """
+        Construct a deck view.
+
+        Parameters:
+            master (tk.Tk|tk.Frame): The parent of this canvas.
+            pick_card (callable): The callback when card in this deck is clicked.
+                                  Takes an int representing the cards index.
+            border_colour (tk.Color): The colour of the decks border.
+            offset (int): The offset between cards in the deck.
+        """
+        super().__init__(master, *args, **kwargs, bg=border_colour,
+                         highlightthickness=5, highlightbackground=border_colour)
+
+        self._active = False
+        self._playing = False
+
+        self.offset = offset
+        self.pick_card = pick_card
+        self.cards = {}
+
+        self._border_colour = border_colour
+        self._active_border = active_border
+
+        self.bind("<Button-1>", self._handle_click)
+
+    def toggle_active(self, active=None):
+        """Toggle whether the deck should be clickable.
+
+        Parameters:
+            active (bool): Whether to activate the deck.
+        """
+        if active is None:
+            self._active = not self._active
+        else:
+            self._active = active
+
+    def toggle_playing(self, playing=None):
+        """Toggle whether the deck is the deck being played.
+
+        Parameters:
+            playing (bool): Whether this deck is being played.
+        """
+        if playing is None:
+            self._playing = not self._active
+        else:
+            self._playing = playing
+
+    def _handle_click(self, event):
+        """Handles when the player clicks the deck."""
+        # the index of the card in the deck
+        slot = event.x // CARD_WIDTH
+
+        if self.pick_card is not None and self._active:
+            self.pick_card(slot)
+
+    def get_card_view(self, card):
+        """Determines the view class for a card.
+
+        Parameters:
+            card (Card): The card that requires a view.
+
+        Returns:
+            (CardView): The view for the given card.
+        """
+        return CARD_VIEWS.get(card.__class__, CardView)
+
+    def draw_card(self, card, slot):
+        """
+        Draw a card in the given slot on the deck.
+
+        Parameters:
+            card (Card): The card to draw to the deck.
+            slot (int): The position in the deck to draw the card.
+
+        Returns:
+            (CardView): The card view drawn at the slot for a given card.
+        """
+        left_side = slot * self.offset
+
+        view = self.get_card_view(card)
+        self.cards[slot] = view(self, left_side)
+
+        return self.cards[slot]
+
+    def draw(self, deck, show=True):
+        """
+        Draw the deck based of the data in a given deck instance.
+
+        Parameter:
+            deck (Deck): The deck to draw in this canvas.
+            show (bool): Whether the cards should be displayed or not.
+        """
+        # resize the canvas to fit all the cards in the deck
+        self.resize(deck.get_amount())
+
+        # highlight border
+        if self._playing:
+            self.config(highlightbackground=self._active_border)
+        else:
+            self.config(highlightbackground=self._border_colour)
+
+        for i, card in enumerate(deck.get_cards()):
+
+            # retrieve the CardView class for this card
+            view = self.cards.get(i, None)
+
+            # draw the CardView if it doesn't exist already
+            if view is None:
+                view = self.draw_card(card, i)
+
+            # if the type of card has changed, redraw the CardView
+            if type(view) != self.get_card_view(card):
+                view = self.draw_card(card, i)
+
+            # update details in the CardView
+            view.redraw(card if show else None)
+
+    def resize(self, size):
+        """
+        Calculate the dimensions required to fit 'size' cards in this canvas
+        and update the canvas size.
+
+        Parameters:
+            size (int): The amount of cards that should be displayed in this deck.
+        """
+        # ensure that the deck is at least one card wide
+        if self.offset < CARD_WIDTH:
+            width = (self.offset * size) + CARD_WIDTH
+        else:
+            width = (self.offset * size)
+
+        height = CARD_HEIGHT
+
+        # resize canvas, adjust for border
+        self.config(width=width - 10, height=height - 10)
