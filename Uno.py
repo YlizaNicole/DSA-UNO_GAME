@@ -45,25 +45,22 @@ class Card:
             return True
         return False
 
-    def play(self, player, game):
+    def play(self):
         return 0
-
 
 class SkipCard(Card):
     def __init__(self, number, colour):
         Card.__init__(self, number, colour)
         
-    def play(self, player, game):
+    def play(self, game):
         game.skip()
-
 
 class ReverseCard(Card):
     def __init__(self, number, colour):
         Card.__init__(self, number, colour)
 
-    def play(self, player, game):
+    def play(self, game):
         game.reverse()
-
 
 class Pickup2Card(Card):
     def __init__(self, number, colour):
@@ -73,7 +70,7 @@ class Pickup2Card(Card):
     def get_pickup_amount(self):
         return self._amount
 
-    def play(self, player, game):
+    def play(self, game):
         cards = game.pickup_pile.pick(self._amount)
         game.next_player().get_deck().add_cards(cards)
         game._turns._location = game._turns._location-1
@@ -90,95 +87,49 @@ class Pickup4Card(Card):
     def matches(self, putdown_pile):
         return True
 
-    def play(self, player, game):
+    def play(self, game):
         cards = game.pickup_pile.pick(self._amount)
         game.next_player().get_deck().add_cards(cards)
         game._turns._location = game._turns._location-1
-    
 
 class Deck:
     def __init__(self, starting_cards = None):
         if starting_cards == None:
-            self._cards = []#DSA empty list
+            self._cards = [] #DSA empty list
         else:
-            self._cards = []#DSA empty list
-            self._cards.extend(starting_cards)#DSA List Methods & Built-In FunctIons extend()
+            self._cards = [] # DSA empty list
+            self._cards.extend(starting_cards) #DSA List Methods & Built-In FunctIons extend()
  
     def get_cards(self):
         return self._cards
     
     def get_amount(self):
-        return len(self._cards)#DSA using List Methods & Built-In FunctIons len ()
+        return len(self._cards) #DSA using List Methods & Built-In FunctIons len ()
 
     def shuffle(self):
         random.shuffle(self._cards)
 
     def pick(self, amount = 1):
-        picked_cards = []#DSA empty list
+        picked_cards = [] # DSA empty list
         for i in range(0, amount):
-            picked_cards.append(self._cards[i])#DSA using List Methods & Built-In FunctIons len ()
-
+            picked_cards.append(self._cards[i]) #DSA List Methods & Built-In FunctIons append ()
         for i in range(0, amount):
             del self._cards[i]
         return picked_cards
 
     def add_card(self, card):
-        self._cards.append(card)
-#DSA using List Methods & Built-In FunctIons len ()
+        self._cards.append(card) #DSA List Methods & Built-In FunctIons
+
     def add_cards(self, cards):
-        self._cards.extend(cards)#DSA List Methods & Built-In FunctIons extend()
+        self._cards.extend(cards) #DSA List Methods & Built-In FunctIons extend()
 
     def top(self):
-        if len(self._cards) == 0:
+        if len(self._cards) == 0: #DSA using List Methods & Built-In FunctIons len ()
             return None
         else:
-            return self._cards[len(self._cards)-1]#DSA using List Methods & Built-In FunctIons len ()
+            #DSA using List Methods & Built-In FunctIons len ()
+            return self._cards[len(self._cards)-1]
 
-
-
-class Player:
-    def __init__(self, name):
-        self._name = name
-        self._deck = Deck()
-
-    def get_name(self):
-        return self._name
-    
-    def get_deck(self):
-        return self._deck
-
-    def is_playable(self):
-        raise NotImplementedError("is_playable to be implemented by subclasses")
-    
-    def has_won(self):
-        if self._deck.get_amount() == 0:
-            return True
-        else:
-            return False
-
-    def pick_card(self, putdown_pile):
-        raise NotImplementedError("pick_card to be implemented by subclasses")
-    def __init__(self, name):
-        self._name = name
-        self._deck = Deck()
-
-    def get_name(self):
-        return self._name
-    
-    def get_deck(self):
-        return self._deck
-
-    def is_playable(self):
-        raise NotImplementedError("is_playable to be implemented by subclasses")
-    
-    def has_won(self):
-        if self._deck.get_amount() == 0:
-            return True
-        else:
-            return False
-
-    def pick_card(self, putdown_pile):
-        raise NotImplementedError("pick_card to be implemented by subclasses")
 
 #DSA List
 
