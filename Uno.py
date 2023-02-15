@@ -533,6 +533,7 @@ CARD_VIEWS = {
 } #adding dictionary
 
 class DeckView(tk.Canvas):
+
     """
     A Canvas that displays a deck of uno cards on a board.
     """
@@ -674,3 +675,223 @@ class DeckView(tk.Canvas):
 
         # resize canvas, adjust for border
         self.config(width=width - 10, height=height - 10)
+
+class UnoApp:
+    """A graphical Uno application"""
+
+    def __init__(self, master, game, board_colour="#F9B05A"):
+        """Create a new Uno application based on a given UnoGame.
+
+        Parameters:
+            master (tk.Tk): The root window for the Uno application.
+            game (UnoGame): The game to display in this application.
+            board_colour (tk.Color): The background colour of the board.
+        """
+        self._master = master
+        self.game = game
+        self.board_colour = board_colour
+
+        # define all the class variables
+        self._board = self.decks = self._putdown_pile = self._pickup_pile \
+            = self._special_pile = None
+
+        self.render_decks()
+
+        self.add_menu()
+
+    def render_decks(self):
+        # remove old frame, if it exists
+        if self._board is not None:
+            self._board.pack_forget()
+
+        # create a board frame
+        self._board = board = tk.Frame(self._master, padx=20, pady=20,
+                                       bg=self.board_colour,
+                                       borderwidth=2, relief="groove")
+        board.pack(expand=True, fill=tk.BOTH)
+
+        self.decks = decks = {}
+
+        # split the board evenly
+        split = len(self.game.players) // 2
+
+        # draw the first decks of players
+        for i, player in enumerate(self.game.players[:split]):
+            decks[player] = self.draw_deck(player, show=False)
+            self.draw_title(player)
+
+        # draw the middle row of piles
+        self._putdown_pile, self._pickup_pile, self._special_pile = self.draw_board()
+
+        # draw the second decks of players
+        for i, player in enumerate(self.game.players[split:]):
+            decks[player] = self.draw_deck(player, show=False)
+            self.draw_title(player)
+
+    def update(self):
+        """Redraw all the decks in the game."""
+        # draw all player decks
+        for player in self.game.players:
+            playing = player == self.game.current_player()
+            clickable = player.is_playable() and playing
+            self.decks[player].toggle_active(active=clickable)
+            self.decks[player].toggle_playing(playing=playing)
+            self.decks[player].draw(player.get_deck(), show=clickable)
+
+        # draw the pile decks
+        self._putdown_pile.draw(self.game.putdown_pile)
+        self._pickup_pile.draw(self.game.pickup_pile, show=False)
+        self._special_pile.draw(self.game.special_pile)
+
+    def new_game(self):
+        """Start a new game"""
+        # clone the old players
+        players = []
+        for player in self.game.players:
+            players.append(player.__class__(player.get_name()))
+
+        # generate a new deck
+        pickup_pile = Deck(build_deck(FULL_DECK))
+        pickup_pile.shuffle()
+
+        # make players pickup cards
+        for player in players:
+            cards = pickup_pile.pick(7)
+            player.get_deck().add_cards(cards)
+
+        self.game = UnoGame(pickup_pile, players)
+        self.render_decks()
+        self.update()
+
+    def add_menu(self):
+        """Create a menu for the application"""
+        menu = tk.Menu(self._master)
+
+        # file menu with new game and exit
+        file = tk.Menu(menu)
+        file.add_command(label="New Game", command=self.new_game)
+        file.add_command(label="Exit", command=self._master.destroy)
+
+        # add file menu to menu
+        menu.add_cascade(label="File", menu=file)
+        self._master.config(menu=menu)
+
+    def pick_card(self, player, slot):
+        """Called when a given playable player selects a slot.
+
+        Parameters:
+            player (Player): The selecting player.
+            slot (int): The card index they selected to play.
+        """
+        # get the selected card
+        card = player.get_deck().get_cards()[slot]
+
+        # pick the card if it matches
+        if card.matches(self.game.putdown_pile.top()):
+            card = player.get_deck().get_cards().pop(slot)
+            self.game.select_card(player, card)
+
+            # wait for next move
+            self.step()
+
+    def draw_card(self, _):
+        """Pick up a card from the deck for the current player."""
+        if not self.game.current_player().is_playable():
+            return
+
+        # select card from deck
+        next_card = self.game.pickup_pile.pick()
+        # add card to players deck
+        self.game.current_player().get_deck().add_cards(next_card)
+
+        # wait for next move
+        self.step()
+
+    def draw_board(self):
+        """Draw the middle row of card piles to the board.
+
+        Returns:
+            tuple<DeckView, DeckView, DeckView>: The putdown, pickup and special
+                                                 piles respectively.
+        """
+        board = tk.Frame(self._board, bg="#6D4C41")
+        board.pack(side=tk.TOP, pady=20, fill=tk.X, expand=True)
+
+        # left pickup card pile view
+        pickup_pile = DeckView(board, offset=0, pick_card=self.draw_card)
+        pickup_pile.toggle_active(active=True)
+        pickup_pile.draw(self.game.putdown_pile, show=False)
+        pickup_pile.pack(side=tk.LEFT, padx=50)
+
+        # right putdown card pile view
+        putdown_pile = DeckView(board, offset=2)
+        putdown_pile.draw(self.game.putdown_pile)
+        putdown_pile.pack(side=tk.RIGHT, padx=50)
+
+        # middle right view for special cards
+        special_pile = DeckView(board, offset=0)
+        special_pile.draw(self.game.special_pile, show=False)
+        special_pile.pack(side=tk.RIGHT)
+
+        return putdown_pile, pickup_pile, special_pile
+
+    def draw_deck(self, player, show=True):
+        """Draw a players deck to the board
+
+        Parameters:
+            player (Player): The player whose deck should be drawn.
+            show (bool): Whether or not to display the players deck.
+
+        Returns:
+            DeckView: The deck view for the player.
+        """
+        deck = DeckView(self._board,
+                        pick_card=lambda card: self.pick_card(player, card))
+        deck.pack(side=tk.TOP)
+        deck.draw(player.get_deck(), show=show)
+        return deck
+
+    def draw_title(self, player):
+        """Draw a deck label for a player to the board.
+
+        Parameters:
+            player (Player): The player to draw.
+        """
+        label = tk.Label(self._board, text=player.get_name(),
+                         font=('Times', '24', 'bold italic'),
+                         bg=self.board_colour)
+        label.pack(side=tk.TOP)
+
+    def step(self):
+        """Perform actions to advance the game a turn."""
+        # end the game if a player has won
+        if self.game.is_over():
+            messagebox.showinfo("Game Over",
+                                f"{self.game.winner.get_name()} has won!")
+            self._master.destroy()
+            return
+
+        # move to the next player
+        player = self.game.next_player()
+        self.update()
+
+        # exit and wait for the player to make their move
+        if player.is_playable():
+            return
+
+        self._master.after(AI_DELAY, self.take_turn)
+
+    def take_turn(self):
+        """Make an automated turn"""
+        # make an automated move
+        player = self.game.current_player()
+        self.game.take_turn(player)
+        self.update()
+
+        self.step()
+
+    def play(self):
+        """Start the game running"""
+        self.step()
+
+
