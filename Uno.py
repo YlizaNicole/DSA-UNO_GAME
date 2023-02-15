@@ -505,3 +505,21 @@ class IconCardView(CardView):
             if self._image_view is not None:
                 # hide the image
                 self._canvas.itemconfig(self._image_view, state="hidden")
+
+class PickupCardView(CardView):
+    """
+    A card that displays the amount of cards to pickup.
+    """
+
+    def redraw(self, card):
+        """Redraw the card view with the properties of the given card.
+
+        Parameters:
+            card (Card): The card to draw to the canvas. If None, draw the
+                         backface of the card.
+        """
+        super().redraw(card)
+
+        if card is not None:
+            self._canvas.itemconfig(self._text_view,
+                                    text=f"+{card.get_pickup_amount()}")
