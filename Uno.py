@@ -372,6 +372,16 @@ def build_deck(structure, range_cards=(Card, )):
 
     return deck
 
+def generate_name():
+    """
+    (str): Selects a random name from a list of player names.
+    """
+    with open("players.txt", "r") as file:
+        names = file.readlines()
+    return random.choice(names).strip()
+
+
+
 #DSA List
 
 FULL_DECK = [
