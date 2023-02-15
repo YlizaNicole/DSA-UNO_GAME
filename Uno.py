@@ -1,7 +1,8 @@
 #modification I want to change:
-#turning the src in a single code
+#turning the src in a single code DONE
 #adding the special wild card since the SRC isn't 
-#According  to the rule decreasing the number of +4 cards cause there are only 4 
+#According  to the rule decreasing the number of +4 cards cause there are only 4 DONE
+#making the player 2 instead of 3 DONE
 
 
 import random
@@ -93,39 +94,39 @@ class Pickup4Card(Card):
 class Deck:
     def __init__(self, starting_cards = None):
         if starting_cards == None:
-            self._cards = []
+            self._cards = [] #DSA empty list
         else:
-            self._cards = []
-            self._cards.extend(starting_cards)
+            self._cards = [] #DSA empty list
+            self._cards.extend(starting_cards) #DSA List Methods & Built-In FunctIons extend()
  
     def get_cards(self):
         return self._cards
     
     def get_amount(self):
-        return len(self._cards)
+        return len(self._cards) #DSA using List Methods & Built-In FunctIons len ()
 
     def shuffle(self):
         random.shuffle(self._cards)
 
     def pick(self, amount = 1):
-        picked_cards = []
+        picked_cards = [] #DSA empty list
         for i in range(0, amount):
-            picked_cards.append(self._cards[i])
+            picked_cards.append(self._cards[i]) #DSA using List Methods & Built-In FunctIons append ()
         for i in range(0, amount):
             del self._cards[i]
         return picked_cards
 
     def add_card(self, card):
-        self._cards.append(card)
+        self._cards.append(card) #DSA using List Methods & Built-In FunctIons append ()
 
     def add_cards(self, cards):
-        self._cards.extend(cards)
+        self._cards.extend(cards) #DSA List Methods & Built-In FunctIons extend()
 
     def top(self):
         if len(self._cards) == 0:
             return None
         else:
-            return self._cards[len(self._cards)-1]
+            return self._cards[len(self._cards)-1] #DSA using List Methods & Built-In FunctIons len ()
 
 
 class Player:
@@ -218,9 +219,9 @@ FULL_DECK = [
 
     (Pickup4Card(0, CardColour.black), (0, 2)),
     (Pickup4Card(0, CardColour.black), (0, 2)),
-    (Pickup4Card(0, CardColour.black), (0, 2)),
-    (Pickup4Card(0, CardColour.black), (0, 2)),
 ]
+##adding List 
+
 
 SPECIAL_CARDS = [Pickup4Card]
 
@@ -240,7 +241,7 @@ class TurnManager:
         # start in correct direction
         self._direction = True
         self._location = 0
-        self._max = len(players)
+        self._max = len(players) #DSA using List Methods & Built-In FunctIons len ()
 
     def current(self):
         """
@@ -316,21 +317,20 @@ class UnoGame:
         Returns:
             (Player): The next player in the game.
         """
-        return self._turns.next()
-
+        return self._turns.next() #DSA List Methods & Built-In FunctIons next()
     def current_player(self):
         """
         (Player) Returns the player whose turn it is currently.
         """
-        return self._turns.current()
+        return self._turns.current()#DSA List Methods & Built-In FunctIons current ()
 
     def skip(self):
         """Prevent the next player from taking their turn."""
-        self._turns.skip()
+        self._turns.skip() #DSA List Methods & Built-In FunctIons skip ()
 
     def reverse(self):
         """Transfer the turn back to the previous player and reverse the order."""
-        self._turns.reverse()
+        self._turns.reverse() #DSA List Methods & Built-In FunctIons reverse()
 
     def get_turns(self):
         """(TurnManager) Returns the turn manager for this game."""
@@ -403,7 +403,7 @@ def build_deck(structure, range_cards=(Card, )):
         structure (list<tuple>): The simplified deck structure.
         range_cards (tuple<Card>): Cards whose numbers should be updated from -1.
     """
-    deck = []
+    deck = [] #empty list
 
     for (card, (start, end)) in structure:
         for number in range(start, end):
@@ -415,14 +415,6 @@ def build_deck(structure, range_cards=(Card, )):
     return deck
 
 
-def generate_name():
-    """
-    (str): Selects a random name from a list of player names.
-    """
-    with open("players.txt", "r") as file:
-        names = file.readlines()
-    return random.choice(names).strip()
-
 
 
 CARD_HEIGHT = 100
@@ -433,7 +425,7 @@ CARD_OVAL_COLOUR = "#fceee3"
 CARD_BACK_BACKGROUND = "black"
 CARD_BACK_FOREGROUND = "red"
 CARD_BACK_TEXT_COLOUR = "yellow"
-CARD_BACK_TEXT = "UNO++"
+CARD_BACK_TEXT = "UNO"
 
 AI_DELAY = 2000
 
@@ -545,7 +537,7 @@ CARD_ICONS = {
     SkipCard: "skip",
     ReverseCard: "reverse"
 }
-
+##dictionary
 
 class IconCardView(CardView):
     """
@@ -635,7 +627,7 @@ class DeckView(tk.Canvas):
 
         self.offset = offset
         self.pick_card = pick_card
-        self.cards = {}
+        self.cards = {} #DSA dictionary
 
         self._border_colour = border_colour
         self._active_border = active_border
@@ -788,7 +780,7 @@ class UnoApp:
                                        borderwidth=2, relief="groove")
         board.pack(expand=True, fill=tk.BOTH)
 
-        self.decks = decks = {}
+        self.decks = decks = {} #DSA Dictionary
 
         # split the board evenly
         split = len(self.game.players) // 2
@@ -824,7 +816,7 @@ class UnoApp:
     def new_game(self):
         """Start a new game"""
         # clone the old players
-        players = []
+        players = [] #DSA LIST
         for player in self.game.players:
             players.append(player.__class__(player.get_name()))
 
@@ -976,11 +968,10 @@ class UnoApp:
 def main():
     # create window for uno
     root = tk.Tk()
-    root.title("Uno++")
+    root.title("Uno")
 
     # build a list of players for the game
-    players = [HumanPlayer("Ravi"), ComputerPlayer(generate_name()),
-               ComputerPlayer(generate_name())]
+    players = [HumanPlayer("YOU"), ComputerPlayer("PLAYER 2")]
 
     # build a pickup pile
     pickup_pile = Deck(build_deck(FULL_DECK))
