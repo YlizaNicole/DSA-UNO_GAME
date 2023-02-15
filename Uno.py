@@ -345,9 +345,36 @@ class UnoGame:
                 return
 
 
+def build_deck(structure, range_cards=(Card, )):
+    """
+    Construct a deck from a simplified deck structure.
+
+    Example structure:
+    [ (Card(colour=CardColour.red), (0, 10)),
+      (SkipCard(colour=CardColour.green), (3, 5)) ]
+
+    Creates a deck with red cards numbered from 0 up to but not including 10 and
+    skip cards with the numbers 3 and 4. Assuming both cards are in range_cards,
+    otherwise creates the same amount of cards with -1 as their numbers.
+
+    Parameters:
+        structure (list<tuple>): The simplified deck structure.
+        range_cards (tuple<Card>): Cards whose numbers should be updated from -1.
+    """
+    deck = []
+
+    for (card, (start, end)) in structure:
+        for number in range(start, end):
+            new_card = card.__class__(-1, card.get_colour())
+            if card.__class__ in range_cards:
+                new_card.set_number(number)
+            deck.append(new_card)
+
+    return deck
+
 #DSA List
 
-Deck = [
+FULL_DECK = [
     Card(0, CardColor.red), (0, 10),
     Card(0, CardColor.yellow), (0, 10),
     Card(0, CardColor.green), (0, 10),
