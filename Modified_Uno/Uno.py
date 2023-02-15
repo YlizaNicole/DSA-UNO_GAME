@@ -51,6 +51,35 @@ class ReverseCard(Card):
     def play(self, game):
         game.reverse()
 
+class Pickup2Card(Card):
+    def __init__(self, number, colour):
+        Card.__init__(self, number, colour)
+        self._amount = 2
+    
+    def get_pickup_amount(self):
+        return self._amount
+
+    def play(self, player, game):
+        cards = game.pickup_pile.pick(self._amount)
+        game.next_player().get_deck().add_cards(cards)
+        game._turns._location = game._turns._location-1
+
+
+class Pickup4Card(Card):
+    def __init__(self, number, colour):
+        Card.__init__(self, number, colour)
+        self._amount = 4
+    
+    def get_pickup_amount(self):
+        return self._amount
+
+    def matches(self, putdown_pile):
+        return True
+
+    def play(self, player, game):
+        cards = game.pickup_pile.pick(self._amount)
+        game.next_player().get_deck().add_cards(cards)
+        game._turns._location = game._turns._location-1
 
 Deck = [
     Card(0, CardColor.red), (0, 10),
@@ -67,12 +96,21 @@ Deck = [
     SkipCard(0, CardColor.green), (0, 2),
     SkipCard(0, CardColor.blue), (0, 2),
 
-    (ReverseCard(0, CardColor.red), (0, 2)),
-    (ReverseCard(0, CardColor.yellow), (0, 2)),
-    (ReverseCard(0, CardColor.green), (0, 2)),
-    (ReverseCard(0, CardColor.blue), (0, 2)),
+    ReverseCard(0, CardColor.red), (0, 2),
+    ReverseCard(0, CardColor.yellow), (0, 2),
+    ReverseCard(0, CardColor.green), (0, 2),
+    ReverseCard(0, CardColor.blue), (0, 2),
 
-    
-]
+    Pickup2Card(0, CardColor.red), (0, 2),
+    Pickup2Card(0, CardColor.yellow), (0, 2),
+
+
+    Pickup4Card(0, CardColor.black), (0, 2),
+    Pickup4Card(0, CardColor.black), (0, 2),
+
+    ]
+
+SPECIAL_CARDS = [Pickup4Card]
 
 print(Deck)
+print (SPECIAL_CARDS)
