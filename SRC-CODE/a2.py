@@ -1,5 +1,7 @@
 import random
 
+__author__ = "trietjack"
+
 
 class Card:
     def __init__(self, number, colour):
@@ -171,5 +173,10 @@ class ComputerPlayer(Player):
         return None
 
 
+def main():
+    print("Please run gui.py instead")
 
+
+if __name__ == "__main__":
+    main()
 
