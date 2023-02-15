@@ -1,6 +1,7 @@
 #modification I want to change:
 #turning the src in a single code
 #adding the special wild card since the SRC isn't 
+#According  to the rule decreasing the number of +4 cards cause there are only 4 
 
 
 
@@ -36,6 +37,16 @@ class Card:
     
     def get_pickup_amount(self):
         return self._amount
+
+    def matches(self, card):
+        if isinstance(card, Pickup4Card): #When starting game with special cards
+            return True
+        if self._colour == card.get_colour() or self._number == card.get_number():
+            return True
+        return False
+
+    def play(self):
+        return 0
 
 class SkipCard(Card):
     def __init__(self, number, colour):
@@ -76,10 +87,12 @@ class Pickup4Card(Card):
     def matches(self, putdown_pile):
         return True
 
-    def play(self, player, game):
+    def play(self, game):
         cards = game.pickup_pile.pick(self._amount)
         game.next_player().get_deck().add_cards(cards)
         game._turns._location = game._turns._location-1
+
+#DSA List
 
 Deck = [
     Card(0, CardColor.red), (0, 10),
@@ -107,6 +120,8 @@ Deck = [
 
     Pickup4Card(0, CardColor.black), (0, 2),
     Pickup4Card(0, CardColor.black), (0, 2),
+
+    #modifed to have the change color wild card
 
     ]
 
