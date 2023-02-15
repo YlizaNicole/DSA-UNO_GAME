@@ -1,3 +1,10 @@
+#modification I want to change:
+#turning the src in a single code
+#adding the special wild card since the SRC isn't 
+
+
+
+
 import random
 from enum import Enum
 
@@ -30,6 +37,13 @@ class Card:
     def get_pickup_amount(self):
         return self._amount
 
+class SkipCard(Card):
+    def __init__(self, number, colour):
+        Card.__init__(self, number, colour)
+        
+    def play(self, game):
+        game.skip()
+
 Deck = [
     Card(0, CardColor.red), (0, 10),
     Card(0, CardColor.yellow), (0, 10),
@@ -39,6 +53,11 @@ Deck = [
     Card(0, CardColor.yellow), (1, 10),
     Card(0, CardColor.green), (1, 10),
     Card(0, CardColor.blue), (1, 10),
+
+    SkipCard(0, CardColor.red), (0, 2),
+    SkipCard(0, CardColor.yellow), (0, 2),
+    SkipCard(0, CardColor.green), (0, 2),
+    SkipCard(0, CardColor.blue), (0, 2),
 ]
 
 print(Deck)
