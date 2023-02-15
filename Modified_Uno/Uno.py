@@ -44,6 +44,14 @@ class SkipCard(Card):
     def play(self, game):
         game.skip()
 
+class ReverseCard(Card):
+    def __init__(self, number, colour):
+        Card.__init__(self, number, colour)
+
+    def play(self, game):
+        game.reverse()
+
+
 Deck = [
     Card(0, CardColor.red), (0, 10),
     Card(0, CardColor.yellow), (0, 10),
@@ -58,6 +66,13 @@ Deck = [
     SkipCard(0, CardColor.yellow), (0, 2),
     SkipCard(0, CardColor.green), (0, 2),
     SkipCard(0, CardColor.blue), (0, 2),
+
+    (ReverseCard(0, CardColor.red), (0, 2)),
+    (ReverseCard(0, CardColor.yellow), (0, 2)),
+    (ReverseCard(0, CardColor.green), (0, 2)),
+    (ReverseCard(0, CardColor.blue), (0, 2)),
+
+    
 ]
 
 print(Deck)
