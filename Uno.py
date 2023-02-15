@@ -471,3 +471,37 @@ CARD_ICONS = { #DSA Dictionary
     ReverseCard: "reverse"
 }
 
+class IconCardView(CardView):
+    """
+    A card that has an image associated with it.
+    """
+
+    def draw(self):
+        """Draw the backface of the card to the canvas."""
+        super().draw()
+        self._image_view = None
+
+    def redraw(self, card):
+        """Redraw the card view with an icon.
+
+        Parameters:
+            card (Card): The card to draw to the canvas. If None, draw the
+                         backface of the card.
+        """
+        super().redraw(card)
+
+        if card is not None:
+            # clear text on the card
+            self._canvas.itemconfig(self._text_view, text="")
+
+            if self._image_view is None:
+                # draw an image based on the card's class
+                image = CARD_ICONS.get(card.__class__, "skip")
+                self._image_view = self.draw_image(f"images/{image}.png")
+            else:
+                # show the image
+                self._canvas.itemconfig(self._image_view, state="normal")
+        else:
+            if self._image_view is not None:
+                # hide the image
+                self._canvas.itemconfig(self._image_view, state="hidden")
