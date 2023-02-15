@@ -244,6 +244,107 @@ class TurnManager:
         return self._players[self._location]
 
 
+class UnoGame:
+    """
+    A game of Uno++.
+    """
+    def __init__(self, deck, players):
+        """
+        Construct a game of uno from a pickup pile and list of players.
+
+        Parameters:
+            deck (Deck): The pile of cards to pickup from.
+            players (list<Player>): The players in this game of uno.
+        """
+        self.pickup_pile = deck
+        self.players = players
+
+        self._turns = TurnManager(players)
+
+        self.putdown_pile = Deck(self.pickup_pile.pick())
+        self.special_pile = Deck()
+
+        self._is_over = False
+        self.winner = None
+
+    def next_player(self):
+        """
+        Changes to the next player in the game and returns an instance of them.
+
+        Returns:
+            (Player): The next player in the game.
+        """
+        return self._turns.next()
+
+    def current_player(self):
+        """
+        (Player) Returns the player whose turn it is currently.
+        """
+        return self._turns.current()
+
+    def skip(self):
+        """Prevent the next player from taking their turn."""
+        self._turns.skip()
+
+    def reverse(self):
+        """Transfer the turn back to the previous player and reverse the order."""
+        self._turns.reverse()
+
+    def get_turns(self):
+        """(TurnManager) Returns the turn manager for this game."""
+        return self._turns
+
+    def is_over(self):
+        """
+        (bool): True iff the game has been won. Assigns the winner variable.
+        """
+        for player in self.players:
+            if player.has_won():
+                self.winner = player
+                self._is_over = True
+
+        return self._is_over
+
+    def select_card(self, player, card):
+        """Perform actions for a player selecting a card
+
+        Parameters:
+            player (Player): The selecting player.
+            card (Card): The card to select.
+        """
+        card.play(player, self)
+        if card.__class__ in SPECIAL_CARDS:
+            self.special_pile.add_card(card)
+        else:
+            self.putdown_pile.add_card(card)
+
+    def take_turn(self, player):
+        """
+        Takes the turn of the given player by having them select a card.
+
+        Parameters:
+            player (Player): The player whose turn it is.
+        """
+        card = player.pick_card(self.putdown_pile)
+
+        if card is None:
+            player.get_deck().add_cards(self.pickup_pile.pick())
+            return
+
+        if card.matches(self.putdown_pile.top()):
+            self.select_card(player, card)
+
+    def take_turns(self):
+        """
+        Plays an entire round by taking the turn for each player in the game.
+        """
+        for player in self.players:
+            self.take_turn(player)
+
+            if player.has_won():
+                return
+
+
 #DSA List
 
 Deck = [
