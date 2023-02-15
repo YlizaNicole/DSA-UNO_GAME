@@ -466,4 +466,8 @@ class CardView:
 
         self.draw()
 
+CARD_ICONS = { #DSA Dictionary
+    SkipCard: "skip",
+    ReverseCard: "reverse"
+}
 
