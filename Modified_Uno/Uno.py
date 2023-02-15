@@ -30,12 +30,15 @@ class Card:
     def get_pickup_amount(self):
         return self._amount
 
-# def __init__(self, number, colour):
-print(Card(0, CardColor.red), (0, 10)),
-print(Card(0, CardColor.yellow), (0, 10)),
-print(Card(0, CardColor.green), (0, 10)),
-print(Card(0, CardColor.blue), (0, 10)),
-print(Card(0, CardColor.red), (1, 10)),
-print(Card(0, CardColor.yellow), (1, 10)),
-print(Card(0, CardColor.green), (1, 10)),
-print(Card(0, CardColor.blue), (1, 10)),
+Deck = [
+    Card(0, CardColor.red), (0, 10),
+    Card(0, CardColor.yellow), (0, 10),
+    Card(0, CardColor.green), (0, 10),
+    Card(0, CardColor.blue), (0, 10),
+    Card(0, CardColor.red), (1, 10),
+    Card(0, CardColor.yellow), (1, 10),
+    Card(0, CardColor.green), (1, 10),
+    Card(0, CardColor.blue), (1, 10),
+]
+
+print(Deck)
