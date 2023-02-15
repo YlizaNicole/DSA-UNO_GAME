@@ -70,7 +70,7 @@ class Pickup2Card(Card):
     def get_pickup_amount(self):
         return self._amount
 
-    def play(self, player, game):
+    def play(self, game):
         cards = game.pickup_pile.pick(self._amount)
         game.next_player().get_deck().add_cards(cards)
         game._turns._location = game._turns._location-1
@@ -91,6 +91,45 @@ class Pickup4Card(Card):
         cards = game.pickup_pile.pick(self._amount)
         game.next_player().get_deck().add_cards(cards)
         game._turns._location = game._turns._location-1
+
+class Deck:
+    def __init__(self, starting_cards = None):
+        if starting_cards == None:
+            self._cards = [] #DSA empty list
+        else:
+            self._cards = [] # DSA empty list
+            self._cards.extend(starting_cards) #DSA List Methods & Built-In FunctIons extend()
+ 
+    def get_cards(self):
+        return self._cards
+    
+    def get_amount(self):
+        return len(self._cards) #DSA using List Methods & Built-In FunctIons len ()
+
+    def shuffle(self):
+        random.shuffle(self._cards)
+
+    def pick(self, amount = 1):
+        picked_cards = [] # DSA empty list
+        for i in range(0, amount):
+            picked_cards.append(self._cards[i]) #DSA List Methods & Built-In FunctIons append ()
+        for i in range(0, amount):
+            del self._cards[i]
+        return picked_cards
+
+    def add_card(self, card):
+        self._cards.append(card) #DSA List Methods & Built-In FunctIons
+
+    def add_cards(self, cards):
+        self._cards.extend(cards) #DSA List Methods & Built-In FunctIons extend()
+
+    def top(self):
+        if len(self._cards) == 0: #DSA using List Methods & Built-In FunctIons len ()
+            return None
+        else:
+            #DSA using List Methods & Built-In FunctIons len ()
+            return self._cards[len(self._cards)-1]
+
 
 #DSA List
 
