@@ -894,4 +894,34 @@ class UnoApp:
         """Start the game running"""
         self.step()
 
+def main():
+    # create window for uno
+    root = tk.Tk()
+    root.title("Uno++")
 
+    # build a list of players for the game
+    players = [HumanPlayer("Ravi"), ComputerPlayer(generate_name()),
+               ComputerPlayer(generate_name())]
+
+    # build a pickup pile
+    pickup_pile = Deck(build_deck(FULL_DECK))
+    pickup_pile.shuffle()
+
+    # deal players cards from the pickup pile
+    for player in players:
+        cards = pickup_pile.pick(7)
+        player.get_deck().add_cards(cards)
+
+    # create and play the game
+    game = UnoGame(pickup_pile, players)
+    app = UnoApp(root, game)
+    app.play()
+
+    # update window dimensions
+    root.update()
+    root.minsize(root.winfo_width(), root.winfo_height())
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
