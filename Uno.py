@@ -130,6 +130,66 @@ class Deck:
             #DSA using List Methods & Built-In FunctIons len ()
             return self._cards[len(self._cards)-1]
 
+class TurnManager:
+    """
+    A class to manage the order of turns amongst game players.
+    """
+    def __init__(self, players):
+        """
+        Construct a new turn manager to based on game players.
+
+        Parameters:
+             players (list<T>): An ordered list of players to store.
+        """
+        self._players = players
+        # start in correct direction
+        self._direction = True
+        self._location = 0
+        self._max = len(players)
+
+    def current(self):
+        """
+        (T) Returns the player whose turn it is.
+        """
+        return self._players[self._location]
+
+    def next(self):
+        """
+        (T) Moves onto the next players turn and return that player.
+        """
+        return self.skip(count=0)
+
+    def peak(self, count=1):
+        """
+        Look forward or backwards in the current ordering of turns.
+
+        Parameters:
+            count (int): The amount of turns to look forward,
+                         if negative, looks backwards.
+
+        Returns:
+            (T): The player we are peaking at.
+        """
+        location = self._location
+        location += count if self._direction else -count
+        location %= self._max
+        return self._players[location]
+
+    def reverse(self):
+        """
+        Reverse the order of turns.
+        """
+        self._direction = not self._direction
+
+    def skip(self, count=0):
+        """
+        (T): Moves onto the next player, skipping 'count' amount players.
+        """
+        count += 1
+        self._location += count if self._direction else -count
+        self._location %= self._max
+        return self._players[self._location]
+
 
 #DSA List
 
@@ -167,4 +227,4 @@ Deck = [
 SPECIAL_CARDS = [Pickup4Card]
 
 print(Deck)
-print (SPECIAL_CARDS)
+print (SPECIAL_CARDS) 
