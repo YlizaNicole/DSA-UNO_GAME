@@ -4,32 +4,12 @@
 #According  to the rule decreasing the number of +4 cards cause there are only 4 
 
 
-
-import tkinter as tk
-from tkinter import messagebox
 import random
 from enum import Enum
-
-CARD_HEIGHT = 100
-CARD_WIDTH = 75
-CARD_SPACE = 10
-
-CARD_OVAL_COLOUR = "#fceee3"
-CARD_BACK_BACKGROUND = "black"
-CARD_BACK_FOREGROUND = "red"
-CARD_BACK_TEXT_COLOUR = "yellow"
-CARD_BACK_TEXT = "UNO++"
-
-AI_DELAY = 2000
+import tkinter as tk
+from tkinter import messagebox
 
 
-#build a deck w colors
-class CardColor(Enum):
-    blue = "#0956BF"
-    red = "#D72600"
-    yellow = "#ECD407"
-    green = "#379711"
-    black = "#222"
 
 class Card:
     def __init__(self, number, colour):
@@ -59,22 +39,25 @@ class Card:
             return True
         return False
 
-    def play(self):
+    def play(self, player, game):
         return 0
+
 
 class SkipCard(Card):
     def __init__(self, number, colour):
         Card.__init__(self, number, colour)
         
-    def play(self, game):
+    def play(self, player, game):
         game.skip()
+
 
 class ReverseCard(Card):
     def __init__(self, number, colour):
         Card.__init__(self, number, colour)
 
-    def play(self, game):
+    def play(self, player, game):
         game.reverse()
+
 
 class Pickup2Card(Card):
     def __init__(self, number, colour):
@@ -84,7 +67,7 @@ class Pickup2Card(Card):
     def get_pickup_amount(self):
         return self._amount
 
-    def play(self, game):
+    def play(self, player, game):
         cards = game.pickup_pile.pick(self._amount)
         game.next_player().get_deck().add_cards(cards)
         game._turns._location = game._turns._location-1
@@ -101,47 +84,47 @@ class Pickup4Card(Card):
     def matches(self, putdown_pile):
         return True
 
-    def play(self, game):
+    def play(self, player, game):
         cards = game.pickup_pile.pick(self._amount)
         game.next_player().get_deck().add_cards(cards)
         game._turns._location = game._turns._location-1
+    
 
 class Deck:
     def __init__(self, starting_cards = None):
         if starting_cards == None:
-            self._cards = [] #DSA empty list
+            self._cards = []
         else:
-            self._cards = [] # DSA empty list
-            self._cards.extend(starting_cards) #DSA List Methods & Built-In FunctIons extend()
+            self._cards = []
+            self._cards.extend(starting_cards)
  
     def get_cards(self):
         return self._cards
     
     def get_amount(self):
-        return len(self._cards) #DSA using List Methods & Built-In FunctIons len ()
+        return len(self._cards)
 
     def shuffle(self):
         random.shuffle(self._cards)
 
     def pick(self, amount = 1):
-        picked_cards = [] # DSA empty list
+        picked_cards = []
         for i in range(0, amount):
-            picked_cards.append(self._cards[i]) #DSA List Methods & Built-In FunctIons append ()
+            picked_cards.append(self._cards[i])
         for i in range(0, amount):
             del self._cards[i]
         return picked_cards
 
     def add_card(self, card):
-        self._cards.append(card) #DSA List Methods & Built-In FunctIons
+        self._cards.append(card)
 
     def add_cards(self, cards):
-        self._cards.extend(cards) #DSA List Methods & Built-In FunctIons extend()
+        self._cards.extend(cards)
 
     def top(self):
-        if len(self._cards) == 0: #DSA using List Methods & Built-In FunctIons len ()
+        if len(self._cards) == 0:
             return None
         else:
-            #DSA using List Methods & Built-In FunctIons len ()
             return self._cards[len(self._cards)-1]
 
 
@@ -180,6 +163,7 @@ class HumanPlayer(Player):
     def pick_card(self, putdown_pile):
         return None
 
+
 class ComputerPlayer(Player):
     def __init__(self, name):
         Player.__init__(self, name)
@@ -195,6 +179,50 @@ class ComputerPlayer(Player):
                 self._deck.get_cards().remove(i)
                 return picked_card
         return None
+
+class CardColour(Enum):
+    """
+    An enumeration of card colours in the Uno game.
+    """
+    blue = "#508ebf"
+    red = "#a30e15"
+    yellow = "#f9bf3b"
+    green = "#5d8402"
+    black = "#222"
+
+
+FULL_DECK = [
+    (Card(0, CardColour.red), (0, 10)),
+    (Card(0, CardColour.yellow), (0, 10)),
+    (Card(0, CardColour.green), (0, 10)),
+    (Card(0, CardColour.blue), (0, 10)),
+    (Card(0, CardColour.red), (1, 10)),
+    (Card(0, CardColour.yellow), (1, 10)),
+    (Card(0, CardColour.green), (1, 10)),
+    (Card(0, CardColour.blue), (1, 10)),
+
+    (SkipCard(0, CardColour.red), (0, 2)),
+    (SkipCard(0, CardColour.yellow), (0, 2)),
+    (SkipCard(0, CardColour.green), (0, 2)),
+    (SkipCard(0, CardColour.blue), (0, 2)),
+
+    (ReverseCard(0, CardColour.red), (0, 2)),
+    (ReverseCard(0, CardColour.yellow), (0, 2)),
+    (ReverseCard(0, CardColour.green), (0, 2)),
+    (ReverseCard(0, CardColour.blue), (0, 2)),
+
+    (Pickup2Card(0, CardColour.red), (0, 2)),
+    (Pickup2Card(0, CardColour.yellow), (0, 2)),
+    (Pickup2Card(0, CardColour.green), (0, 2)),
+    (Pickup2Card(0, CardColour.blue), (0, 2)),
+
+    (Pickup4Card(0, CardColour.black), (0, 2)),
+    (Pickup4Card(0, CardColour.black), (0, 2)),
+    (Pickup4Card(0, CardColour.black), (0, 2)),
+    (Pickup4Card(0, CardColour.black), (0, 2)),
+]
+
+SPECIAL_CARDS = [Pickup4Card]
 
 
 class TurnManager:
@@ -386,6 +414,7 @@ def build_deck(structure, range_cards=(Card, )):
 
     return deck
 
+
 def generate_name():
     """
     (str): Selects a random name from a list of player names.
@@ -396,40 +425,18 @@ def generate_name():
 
 
 
-#DSA List
+CARD_HEIGHT = 100
+CARD_WIDTH = 75
+CARD_SPACE = 10
 
-FULL_DECK = [
-    Card(0, CardColor.red), (0, 10),
-    Card(0, CardColor.yellow), (0, 10),
-    Card(0, CardColor.green), (0, 10),
-    Card(0, CardColor.blue), (0, 10),
-    Card(0, CardColor.red), (1, 10),
-    Card(0, CardColor.yellow), (1, 10),
-    Card(0, CardColor.green), (1, 10),
-    Card(0, CardColor.blue), (1, 10),
+CARD_OVAL_COLOUR = "#fceee3"
+CARD_BACK_BACKGROUND = "black"
+CARD_BACK_FOREGROUND = "red"
+CARD_BACK_TEXT_COLOUR = "yellow"
+CARD_BACK_TEXT = "UNO++"
 
-    SkipCard(0, CardColor.red), (0, 2),
-    SkipCard(0, CardColor.yellow), (0, 2),
-    SkipCard(0, CardColor.green), (0, 2),
-    SkipCard(0, CardColor.blue), (0, 2),
+AI_DELAY = 2000
 
-    ReverseCard(0, CardColor.red), (0, 2),
-    ReverseCard(0, CardColor.yellow), (0, 2),
-    ReverseCard(0, CardColor.green), (0, 2),
-    ReverseCard(0, CardColor.blue), (0, 2),
-
-    Pickup2Card(0, CardColor.red), (0, 2),
-    Pickup2Card(0, CardColor.yellow), (0, 2),
-
-
-    Pickup4Card(0, CardColor.black), (0, 2),
-    Pickup4Card(0, CardColor.black), (0, 2),
-
-    #modifed to have the change color wild card
-
-    ]
-
-SPECIAL_CARDS = [Pickup4Card]
 
 class CardView:
     """
@@ -466,10 +473,79 @@ class CardView:
 
         self.draw()
 
-CARD_ICONS = { #DSA Dictionary
+    def draw(self):
+        """Draw the backface of the card to the canvas."""
+        self._back = self.draw_back(self._background)
+        self._oval = self.draw_circle(self._foreground)
+        self._text_view = self.draw_text(self._text, self._text_colour)
+
+    def redraw(self, card):
+        """Redraw the card view with the properties of the given card.
+
+        Parameters:
+            card (Card): The card to draw to the canvas. If None, draw the
+                         backface of the card.
+        """
+        if card is not None:
+            # draw the card with details from the card parameter
+            self._canvas.itemconfig(self._back, fill=card.get_colour().value)
+            self._canvas.itemconfig(self._oval, fill=self._oval_colour)
+            self._canvas.itemconfig(self._text_view, fill=card.get_colour().value,
+                                    text=card.get_number())
+        else:
+            # draw the backface of the card
+            self._canvas.itemconfig(self._back, fill=self._background)
+            self._canvas.itemconfig(self._oval, fill=self._foreground)
+            self._canvas.itemconfig(self._text_view, fill=self._text_colour,
+                                    text=self._text)
+
+    def draw_back(self, colour):
+        """Draw the back of the canvas (the background not the backface).
+
+        Parameters:
+            colour (tk.Color): The colour of the background.
+        """
+        return self._canvas.create_rectangle(self.left_side, 0,
+                                             self.right_side, CARD_HEIGHT,
+                                             fill=colour)
+
+    def draw_circle(self, colour):
+        """Draw a circle in the middle of the card.
+
+        Parameters:
+            colour (tk.Color): The colour of the cirlce.
+        """
+        return self._canvas.create_oval(self.left_side + 10, 10,
+                                        self.right_side - 10, CARD_HEIGHT - 10,
+                                        fill=colour)
+
+    def draw_text(self, text, colour):
+        """Draw text in the middle of the card.
+
+        Parameters:
+            text (str): The text to display on the card.
+            colour (tk.Color): The colour of the text to display.
+        """
+        return self._canvas.create_text(self.left_side + (CARD_WIDTH // 2),
+                                        CARD_HEIGHT // 2, text=text, fill=colour,
+                                        font=('Times', '16', 'bold italic'))
+
+    def draw_image(self, image):
+        """Draw an image in the middle of the card.
+
+        Parameters:
+            image (str): The filepath of the image to display.
+        """
+        self._image = tk.PhotoImage(file=image)
+        return self._canvas.create_image(self.left_side + (CARD_WIDTH // 2),
+                                         CARD_HEIGHT // 2, image=self._image)
+
+
+CARD_ICONS = {
     SkipCard: "skip",
     ReverseCard: "reverse"
 }
+
 
 class IconCardView(CardView):
     """
@@ -506,6 +582,7 @@ class IconCardView(CardView):
                 # hide the image
                 self._canvas.itemconfig(self._image_view, state="hidden")
 
+
 class PickupCardView(CardView):
     """
     A card that displays the amount of cards to pickup.
@@ -524,16 +601,16 @@ class PickupCardView(CardView):
             self._canvas.itemconfig(self._text_view,
                                     text=f"+{card.get_pickup_amount()}")
 
-        
+
 CARD_VIEWS = {
     SkipCard: IconCardView,
     ReverseCard: IconCardView,
     Pickup2Card: PickupCardView,
     Pickup4Card: PickupCardView
-} #adding dictionary
+}
+
 
 class DeckView(tk.Canvas):
-
     """
     A Canvas that displays a deck of uno cards on a board.
     """
@@ -675,6 +752,7 @@ class DeckView(tk.Canvas):
 
         # resize canvas, adjust for border
         self.config(width=width - 10, height=height - 10)
+
 
 class UnoApp:
     """A graphical Uno application"""
@@ -893,6 +971,7 @@ class UnoApp:
     def play(self):
         """Start the game running"""
         self.step()
+
 
 def main():
     # create window for uno
