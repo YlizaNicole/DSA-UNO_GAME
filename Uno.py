@@ -5,9 +5,23 @@
 
 
 
-
+import tkinter as tk
+from tkinter import messagebox
 import random
 from enum import Enum
+
+CARD_HEIGHT = 100
+CARD_WIDTH = 75
+CARD_SPACE = 10
+
+CARD_OVAL_COLOUR = "#fceee3"
+CARD_BACK_BACKGROUND = "black"
+CARD_BACK_FOREGROUND = "red"
+CARD_BACK_TEXT_COLOUR = "yellow"
+CARD_BACK_TEXT = "UNO++"
+
+AI_DELAY = 2000
+
 
 #build a deck w colors
 class CardColor(Enum):
@@ -416,3 +430,40 @@ FULL_DECK = [
     ]
 
 SPECIAL_CARDS = [Pickup4Card]
+
+class CardView:
+    """
+    A class to manage the drawing of a Uno card on a canvas.
+    """
+
+    def __init__(self, canvas, left_side, oval_colour=CARD_OVAL_COLOUR,
+                 background_colour=CARD_BACK_BACKGROUND,
+                 foreground_colour=CARD_BACK_FOREGROUND,
+                 text_colour=CARD_BACK_TEXT_COLOUR, text=CARD_BACK_TEXT):
+        """
+        Construct a new card to be drawn on the given canvas at the left_position.
+
+        Parameters:
+            canvas (tk.Canvas): The canvas to draw the card onto.
+            left_side (int): The amount of pixels in the canvas to draw the card.
+            oval_colour (tk.Color): Colour of the oval for this card.
+            background_colour (tk.Color): Backface card background colour.
+            foreground_colour (tk.Color): Backface card foreground colour.
+            text_colour (tk.Color): Backface card text colour.
+            text (str): Backface card text to display.
+        """
+        self._canvas = canvas
+
+        self.left_side = left_side
+        self.right_side = left_side + CARD_WIDTH
+
+        self._oval_colour = oval_colour
+        self._background = background_colour
+        self._foreground = foreground_colour
+        self._text_colour = text_colour
+        self._text = text
+        self._image = None
+
+        self.draw()
+
+
