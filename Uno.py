@@ -523,3 +523,12 @@ class PickupCardView(CardView):
         if card is not None:
             self._canvas.itemconfig(self._text_view,
                                     text=f"+{card.get_pickup_amount()}")
+
+        
+CARD_VIEWS = {
+    SkipCard: IconCardView,
+    ReverseCard: IconCardView,
+    Pickup2Card: PickupCardView,
+    Pickup4Card: PickupCardView
+} #adding dictionary
+
